@@ -92,7 +92,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
-
+                    Intent homeintent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(homeintent);
 
                 }
                 setResult(Activity.RESULT_OK);
@@ -100,8 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                 //Complete and destroy login activity once successful
               //  finish();
 
-                Intent homeintent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(homeintent);
+
             }
         });
 
