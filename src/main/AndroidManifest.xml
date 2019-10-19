@@ -12,10 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SignUpActivity"
+        <activity android:name=".ui.signup.SignUpActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".HomeActivity"
+            android:name=".ui.home.HomeActivity"
             android:label="@string/title_activity_home"
             android:screenOrientation="portrait"/>
         <activity

@@ -1,9 +1,9 @@
-package com.tatayab.tatayab;
+package com.tatayab.tatayab.ui.home;
 
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
+import com.tatayab.tatayab.R;
 
 
 import androidx.appcompat.app.AppCompatActivity;

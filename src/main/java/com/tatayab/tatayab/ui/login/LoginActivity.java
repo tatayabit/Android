@@ -25,9 +25,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tatayab.tatayab.HomeActivity;
+import com.tatayab.tatayab.ui.home.HomeActivity;
 import com.tatayab.tatayab.R;
-import com.tatayab.tatayab.SignUpActivity;
+import com.tatayab.tatayab.ui.signup.SignUpActivity;
 import com.tatayab.tatayab.Utils.Utils;
 import com.tatayab.tatayab.connecction.ApiClient;
 import com.tatayab.tatayab.connecction.ApiInterface;
