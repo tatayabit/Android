@@ -1,12 +1,11 @@
 package com.tatayab.tatayab.ui.login;
 
-import android.app.Activity;
-
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -21,18 +20,18 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tatayab.tatayab.HomeActivity;
 import com.tatayab.tatayab.R;
+import com.tatayab.tatayab.SignUpActivity;
 import com.tatayab.tatayab.Utils.Utils;
 import com.tatayab.tatayab.connecction.ApiClient;
 import com.tatayab.tatayab.connecction.ApiInterface;
 import com.tatayab.tatayab.model.LoginResponseParser;
-import com.tatayab.tatayab.ui.login.LoginViewModel;
-import com.tatayab.tatayab.ui.login.LoginViewModelFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,11 +40,20 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.tatayab.tatayab.Utils.Utils.AuthorizationKey;
 
-public class LoginActivity extends AppCompatActivity {
+
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private LoginViewModel loginViewModel;
+    ImageView signupButton;
+    EditText usernameEditText;
+    EditText passwordEditText;
+    Button loginButton;
+    ProgressBar loadingProgressBar;
+    TextView Forgt_textView;
+    ImageView faceBook_imageView;
+    ImageView instagram_imageView;
+    ImageView twitter_imageView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,15 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
-        final Button loginButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
-
-        usernameEditText.setText("m.roshan@tatayab.com");
-        passwordEditText.setText("Ratnapura123");
-
-
+        InitializeViews();
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
+      /*  loginViewModel.getLoginResult().observe(this, new Observer<LoginResult>() {
             @Override
             public void onChanged(@Nullable LoginResult loginResult) {
                 if (loginResult == null) {
@@ -91,8 +91,8 @@ public class LoginActivity extends AppCompatActivity {
                     showLoginFailed(loginResult.getError());
                 }
                 if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                    Intent homeintent = new Intent(getApplicationContext(), HomeActivity.class);
+                 //   updateUiWithUser(loginResult.getSuccess());
+                    Intent homeintent = new Intent(getApplicationContext(), HomesActivity.class);
                     startActivity(homeintent);
 
                 }
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
             }
-        });
+        });*/
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
@@ -131,6 +131,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loginViewModel.login(usernameEditText.getText().toString(),
                             passwordEditText.getText().toString());
+
+
+                    new AsyncApiCall(usernameEditText.getText().toString(),
+                            passwordEditText.getText().toString()).execute();
                 }
                 return false;
             }
@@ -140,13 +144,14 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
-               loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+
 
                 if(Utils.isNetworkConnected(getApplicationContext())){
 
                     new AsyncApiCall(usernameEditText.getText().toString(),
                             passwordEditText.getText().toString()).execute();
+
+                    loadingProgressBar.setVisibility(View.INVISIBLE);
 
                 }else{
                     Toast.makeText(getApplicationContext(),"Sorry you don't have internet connection!!",Toast.LENGTH_LONG).show();
@@ -155,6 +160,29 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    public void InitializeViews(){
+        usernameEditText = findViewById(R.id.username);
+        passwordEditText = findViewById(R.id.password);
+        loginButton = findViewById(R.id.login);
+        loadingProgressBar = findViewById(R.id.loading);
+        signupButton = findViewById( R.id.SignUp_button);
+// added for temp login need to remove
+        usernameEditText.setText("m.roshan@tatayab.com");
+        passwordEditText.setText("Ratnapura123");
+        signupButton.setOnClickListener(this);
+
+        Forgt_textView = findViewById(R.id.Forgt_textView);
+        Forgt_textView.setOnClickListener(this);
+
+        twitter_imageView= findViewById(R.id.twitter_imageView);
+        faceBook_imageView= findViewById(R.id.faceBook_imageView);
+        instagram_imageView= findViewById(R.id.instagram_imageView);
+
+        instagram_imageView.setOnClickListener(this);
+        faceBook_imageView.setOnClickListener(this);
+        twitter_imageView.setOnClickListener(this);
+
+    }
 
     private void callLoginApi(String email,String password) {
 
@@ -171,10 +199,13 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (statusCode == 201) {
                     System.out.println("response"+response.body());
-                    Toast.makeText(getApplicationContext(),"You loggedin successfully",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"You loggedin successfully"+response.body().getUserProfile().getBFirstname(),Toast.LENGTH_SHORT).show();
+
+                    Intent homeintent = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(homeintent);
 
                 } else {
-
+                    Toast.makeText(getApplicationContext(),response.message(),Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -196,6 +227,32 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.SignUp_button){
+            Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+            startActivity(intent);
+
+        }else if(v.getId() == R.id.Forgt_textView){
+
+        }
+        else if(v.getId() == R.id.instagram_imageView){
+            Uri webpage = Uri.parse("https://www.instagram.com/tatayab/");
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, webpage);
+            startActivity(myIntent);
+        }
+        else if(v.getId() == R.id.faceBook_imageView){
+            Uri webpage = Uri.parse("https://www.facebook.com/TatayabCom/");
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, webpage);
+            startActivity(myIntent);
+
+        }else if(v.getId() == R.id.twitter_imageView){
+            Uri webpage = Uri.parse("https://twitter.com/tatayab/");
+            Intent myIntent = new Intent(Intent.ACTION_VIEW, webpage);
+            startActivity(myIntent);
+        }
+    }
+
     private class AsyncApiCall extends AsyncTask<Void, Void, Void>
 
 
@@ -213,7 +270,8 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
+           /* loginViewModel.login(Useremail,
+                   Userpassword);*/
             //this method will be running on UI thread
             pdLoading.setMessage("\tLoading...");
             pdLoading.show();
