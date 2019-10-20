@@ -1,4 +1,4 @@
-package com.tatayab.tatayab.ui.notifications;
+package com.tatayab.tatayab.ui.concierge;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,17 +15,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tatayab.tatayab.R;
 
-public class NotificationsFragment extends Fragment {
+public class ConciergeFragment extends Fragment {
 
-    private NotificationsViewModel notificationsViewModel;
+    private ConciergeViewModel conciergeViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
+        conciergeViewModel =
+                ViewModelProviders.of(this).get(ConciergeViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_concierge, container, false);
         final TextView textView = root.findViewById(R.id.text_notifications);
-        notificationsViewModel.getText().observe(this, new Observer<String>() {
+        conciergeViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

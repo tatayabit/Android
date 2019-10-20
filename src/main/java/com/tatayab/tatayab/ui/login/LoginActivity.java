@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tatayab.tatayab.SharedPreference;
 import com.tatayab.tatayab.ui.home.HomeActivity;
 import com.tatayab.tatayab.R;
 import com.tatayab.tatayab.ui.signup.SignUpActivity;
@@ -36,6 +37,7 @@ import com.tatayab.tatayab.model.LoginResponseParser;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,6 +66,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         InitializeViews();
 
+
+       /* if(!SharedPreference.getProfileId(getApplicationContext(),"ProfileId").equals("")){
+
+            Intent intent  = new Intent(getApplicationContext(),HomeActivity.class);
+            startActivity(intent);
+        }*/
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
             public void onChanged(@Nullable LoginFormState loginFormState) {
@@ -154,7 +162,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     loadingProgressBar.setVisibility(View.INVISIBLE);
 
                 }else{
-                    Toast.makeText(getApplicationContext(),"Sorry you don't have internet connection!!",Toast.LENGTH_LONG).show();
+
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.WARNING_TYPE);
+                    sweetAlertDialog.setTitleText("You don't have internet connection!")
+                            .setContentText("Please connect to internet !!")
+                            .setConfirmText("Yes")
+                            .show();
+
+                    loadingProgressBar.setVisibility(View.INVISIBLE);
                 }
             }
         });
@@ -200,12 +215,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (statusCode == 201) {
                     System.out.println("response"+response.body());
                     Toast.makeText(getApplicationContext(),"You loggedin successfully"+response.body().getUserProfile().getBFirstname(),Toast.LENGTH_SHORT).show();
+                    SharedPreference.setFirstName(getApplicationContext(),"FirstName",response.body().getUserProfile().getFirstname());
+                    SharedPreference.setLastname(getApplicationContext(),"LastName",response.body().getUserProfile().getLastname());
 
                     Intent homeintent = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(homeintent);
 
                 } else {
-                    Toast.makeText(getApplicationContext(),response.message(),Toast.LENGTH_SHORT).show();
+
+                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(LoginActivity.this, SweetAlertDialog.ERROR_TYPE);
+                    sweetAlertDialog.setTitleText("Oops...");
+                    sweetAlertDialog.setContentText(response.message());
+                    sweetAlertDialog.show();
                 }
             }
 

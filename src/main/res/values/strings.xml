@@ -12,6 +12,9 @@
     <string name="ForgotPaswrd">Forgot Password ?</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_category">Category</string>
+    <string name="title_concierge">Concierge</string>
+    <string name="title_Profile">Profile</string>
+    <string name="title_Cart">Cart</string>
 </resources>
+

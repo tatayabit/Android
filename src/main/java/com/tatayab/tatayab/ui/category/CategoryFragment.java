@@ -1,4 +1,4 @@
-package com.tatayab.tatayab.ui.dashboard;
+package com.tatayab.tatayab.ui.category;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,17 +15,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tatayab.tatayab.R;
 
-public class DashboardFragment extends Fragment {
+public class CategoryFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
+    private CategoryViewModel categoryViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                ViewModelProviders.of(this).get(DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        categoryViewModel =
+                ViewModelProviders.of(this).get(CategoryViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_category, container, false);
         final TextView textView = root.findViewById(R.id.text_dashboard);
-        dashboardViewModel.getText().observe(this, new Observer<String>() {
+        categoryViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

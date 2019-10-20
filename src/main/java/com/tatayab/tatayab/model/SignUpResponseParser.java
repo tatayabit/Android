@@ -13,6 +13,10 @@ public class SignUpResponseParser {
         @Expose
         private String profileId;
 
+
+
+
+
         public Integer getUserId() {
             return userId;
         }
@@ -28,6 +32,7 @@ public class SignUpResponseParser {
         public void setProfileId(String profileId) {
             this.profileId = profileId;
         }
+
 
     }
 

@@ -2,23 +2,37 @@ package com.tatayab.tatayab.ui.signup;
 
 
 
-import android.content.DialogInterface;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.text.Editable;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
+
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+
 import android.widget.TextView;
-import android.widget.Toast;
 
-
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
 import com.tatayab.tatayab.R;
+import com.tatayab.tatayab.SharedPreference;
+
 import com.tatayab.tatayab.connecction.ApiClient;
 import com.tatayab.tatayab.connecction.ApiInterface;
+import com.tatayab.tatayab.model.ErrorResponseParser;
 import com.tatayab.tatayab.model.SignUpResponseParser;
 import com.tatayab.tatayab.ui.login.LoginActivity;
 
@@ -26,9 +40,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+
 import retrofit2.Response;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
@@ -40,6 +56,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     Button  SignupButton;
     Integer alertindentifier;
     TextView Signin_textView;
+    SweetAlertDialog sweetAlertDialog1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +64,43 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_sign_up);
 
         InitializeViews();
+
+        TextWatcher afterTextChangedListener = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // ignore
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // ignore
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
+        editphoneNumber.addTextChangedListener(afterTextChangedListener);
+        editphoneNumber.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+
+                    if(ValidationUtils()){
+
+                        new AsyncApiCall().execute();
+                    }else{
+                        AlertDialog();
+                    }
+
+                }
+                return false;
+            }
+        });
+
+
     }
 
     public void InitializeViews() {
@@ -59,6 +113,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         SignupButton.setOnClickListener(this);
         Signin_textView = findViewById(R.id.Signin_textView);
         Signin_textView.setOnClickListener(this);
+        Spannable wordtoSpan = new SpannableString("Already have an Account? Sign in");
+        wordtoSpan.setSpan(new ForegroundColorSpan(Color.parseColor("#8399A4")), 0, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        wordtoSpan.setSpan(new ForegroundColorSpan(Color.parseColor("#74562B")), 24, 32, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        Signin_textView.setText(wordtoSpan);
 
     }
 
@@ -67,8 +126,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         if(v.getId() == R.id.Signupreg_button) {
 
             if(ValidationUtils()){
-
-                callLoginSignUpApi();
+                new AsyncApiCall().execute();
             }else{
                 AlertDialog();
             }
@@ -79,6 +137,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             finish();
 
         }
+        if(v.getId() == R.id.confirm_button){
+            Intent homeintent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(homeintent);
+            finish();
+        }
     }
 
     public boolean ValidationUtils() {
@@ -88,7 +151,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             alertindentifier=0;
 
             return false;
-        }else if(editEmail.getText().toString().isEmpty()||editEmail.getText().toString().equals("")){
+        }else if(editEmail.getText().toString().isEmpty()||editEmail.getText().toString().equals("")||!editEmail.getText().toString().contains("@")){
+
 
             alertindentifier=1;
 
@@ -109,37 +173,23 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void AlertDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this,R.style.DialogTheme);
-        builder.setTitle("Alert");
+
+
+        SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
+        sweetAlertDialog.setTitleText("Oops...");
+
         if(alertindentifier==0){
-            builder.setMessage("Please enter the Full Name!!");
+            sweetAlertDialog.setContentText("Please enter the Full Name!!");
         }else if(alertindentifier==1){
-            builder.setMessage("Please enter the Email!!");
+            sweetAlertDialog.setContentText("Please enter the valid Email!!");
         }else if(alertindentifier==2){
-            builder.setMessage("Please enter the Password!!");
+            sweetAlertDialog.setContentText("Please enter the Password!!");
         }else if(alertindentifier==3){
-            builder.setMessage("Please enter the Phone!!");
-        }else if(alertindentifier==4){
-            builder.setMessage("You have signed up successfully. Login to continue!");
+            sweetAlertDialog.setContentText("Please enter the Phone!!");
         }
 
-        builder.setCancelable(true);
 
-        builder.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-
-                        dialog.cancel();
-                        if(alertindentifier==4){
-                            Intent homeintent = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(homeintent);
-                            finish();
-                        }
-                    }
-                });
-
-
-        builder.show();
+        sweetAlertDialog.show();
 
     }
 
@@ -159,24 +209,100 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             public void onResponse(Call<SignUpResponseParser> call, Response<SignUpResponseParser> response) {
 
                 int statusCode = response.code();
-
+                System.out.println("response are "+response);
                 if (statusCode == 201) {
                     System.out.println("response"+response.body());
                     alertindentifier=4;
-                    AlertDialog();
+
+                    SharedPreference.setUserId(getApplicationContext(),"UserId",response.body().getUserId());
+                    SharedPreference.setProfileId(getApplicationContext(),"ProfileId",response.body().getProfileId().toString());
+
+                    sweetAlertDialog1 = new SweetAlertDialog(SignUpActivity.this, SweetAlertDialog.SUCCESS_TYPE);
+                    sweetAlertDialog1.setContentText("You have signed up successfully. Login to continue!");
+                    sweetAlertDialog1.show();
+
+                    sweetAlertDialog1.findViewById(R.id.confirm_button).setOnClickListener(SignUpActivity.this);
 
 
 
                 } else {
-                    Toast.makeText(getApplicationContext(),response.message(),Toast.LENGTH_SHORT).show();
+                    Gson gson = new Gson();
+                    ErrorResponseParser errorResponse = gson.fromJson(response.errorBody().charStream(), ErrorResponseParser.class);
+                    if (errorResponse.getStatus() == 400) {
+
+                        sweetAlertDialog1 = new SweetAlertDialog(SignUpActivity.this, SweetAlertDialog.WARNING_TYPE);
+                        Spanned alertString = Html.fromHtml(errorResponse.getMessage().replace("Bad Request:",""));
+                        sweetAlertDialog1.setContentText(alertString.toString());
+                        sweetAlertDialog1.show();
+
+
+
+                    } else {
+
+                        sweetAlertDialog1 = new SweetAlertDialog(SignUpActivity.this, SweetAlertDialog.WARNING_TYPE);
+                        Spanned alertString = Html.fromHtml(errorResponse.getMessage().replace("Bad Request:",""));
+                        sweetAlertDialog1.setContentText(errorResponse.getMessage());
+                        sweetAlertDialog1.show();
+
+                    }
                 }
+
+
+
             }
 
             @Override
             public void onFailure(Call<SignUpResponseParser> call, Throwable t) {
-                System.out.println("err val"+t.getMessage());
+                System.out.println("err val"+t.getLocalizedMessage());
 
             }
         });
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if (sweetAlertDialog1 != null && sweetAlertDialog1.isShowing()) {
+            sweetAlertDialog1.dismiss();
+        }
+    }
+
+    private class AsyncApiCall extends AsyncTask<Void, Void, Void>
+
+
+    {
+        ProgressDialog pdLoading = new ProgressDialog(SignUpActivity.this);
+
+
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            //this method will be running on UI thread
+            pdLoading.setMessage("\tLoading...");
+            pdLoading.show();
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            callLoginSignUpApi();
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            //this method will be running on UI thread
+
+            pdLoading.dismiss();
+        }
+
+
+
     }
 }

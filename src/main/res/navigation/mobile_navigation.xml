@@ -12,14 +12,28 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.tatayab.tatayab.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_category"
+        android:name="com.tatayab.tatayab.ui.category.CategoryFragment"
+        android:label="@string/title_category"
+        tools:layout="@layout/fragment_category" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.tatayab.tatayab.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_concierge"
+        android:name="com.tatayab.tatayab.ui.concierge.ConciergeFragment"
+        android:label="@string/title_concierge"
+        tools:layout="@layout/fragment_concierge" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.tatayab.tatayab.ui.profile.ProfileFragment"
+        android:label="@string/title_Profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_cart"
+        android:name="com.tatayab.tatayab.ui.category.CategoryFragment"
+        android:label="@string/title_category"
+        tools:layout="@layout/fragment_category" />
+
+
 </navigation>

@@ -2,6 +2,7 @@ package com.tatayab.tatayab.Utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.util.Patterns;
 
 public class Utils {
 
@@ -15,5 +16,17 @@ public class Utils {
             return false;
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm != null && cm.getActiveNetworkInfo() != null;
+    }
+
+
+    public static boolean isEmailValid(String username) {
+        if (username == null) {
+            return false;
+        }
+        if (username.contains("@")) {
+            return Patterns.EMAIL_ADDRESS.matcher(username).matches();
+        } else {
+            return !username.trim().isEmpty();
+        }
     }
 }

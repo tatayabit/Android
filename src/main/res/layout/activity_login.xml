@@ -43,11 +43,12 @@
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:selectAllOnFocus="true"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorWhite"
+                android:textColor="@color/colorText"
+                android:textColorHint="@color/colorText"
                 android:textSize="31px"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:paddingLeft="@dimen/activity_vertical_margin"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
@@ -65,7 +66,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="textPassword"
                 android:selectAllOnFocus="true"
-                android:textColorHint="@color/colorWhite"
+                android:textColorHint="@color/colorText"
                 android:textSize="31px"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
